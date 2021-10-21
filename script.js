@@ -136,6 +136,8 @@ function drawNinjaMan() {
 
 drawNinjaMan()
 
+// This will describe how I scan to creat a new world
+
 document.onkeydown = function(e) {
     if(e.key=="ArrowLeft"  && legalMoves[3] === 1) {
         ninjaMan.x--;
