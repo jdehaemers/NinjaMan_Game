@@ -6,32 +6,61 @@ var blockToggle  = false;
 var legalMoves   = [1,1,1,1]
 var sushiCount   = 0
 var nigiriCount  = 0
+var cellTypes    = ["block", 
+                    "empty", 
+                    "sushi",
+                    "nigiri",
+                    "ninjaman" ]
 
-function renderWorldArray(x, y) {
-    var worldRow = [];
-    world = [];
-    for(var i=0; i<x; i++) {
-        worldRow.push(0);
-    }
-    for(var i=0; i<y; i++) {
+function generateWorldArray(x, y) {
+    for(var j=0; j<y; j++) {
+        var worldRow = [];
+        for(var i=0; i<x; i++) {
+            if(j===0 || j===y-1 || i===0 || i===x-1 || (i%3===0 && j%3===0)) {
+                worldRow.push(0);
+            } else {
+                worldRow.push(1);
+            }
+        } 
         world.push(worldRow);
     }
-    drawWorld()
+    console.log(world)
+    // var setBlocks = [[3,3], [12, 12]]
+    // for(var n=0; n<30; n++) {
+    //     var rand = Math.random();
+    //     rand = Math.floor(rand*(x-2)*(y-2));
+    //     var p = Math.floor(rand/(y-2));
+    //     var q = rand%(x-2);
+    //     world[p+1][q+1] = 0;
+    // }
+    for(var j=1; j<y-2; j++) {
+        for(var i=1; i<x-2; i++) {
+            if(((world[i][j] + world[i+1][j] + world[i][j+1] + world[i+1][j+1])===4)) {
+                var z = Math.random();
+                z = Math.floor(z*4);
+                var a = Math.floor(z/2);
+                var b = z%2;
+                world[i+a][j+b] = 0;
+            }
+        } 
+    }
+    // console.log(world)
+    renderWorld()
 }
 
-function drawWorld() {
-    var oldRows = document.querySelectorAll(".row");
-    for(var r=0; r<oldRows.length; r++) {
-        oldRows[r].remove();
-    }
-    for(var i=0; i<world.length; i++) {
+function scanUpdateQuadrant(x, y) {
+    console.log(x, y);
+}
+
+function renderWorld() {
+    for(var j=0; j<world.length; j++) {
         var row = document.createElement("div");
         document.getElementById("world").appendChild(row);
         row.classList.add("row");
-        for(var j=0; j<world[0].length; j++) {
+        for(var i=0; i<world[0].length; i++) {
             var block = document.createElement("div");
             block.classList.add("cell");
-            block.classList.add("block");
+            block.classList.add(cellTypes[world[j][i]]);
             block.setAttribute("onclick", "transformCell(this)");
             row.appendChild(block);
         }   
@@ -56,10 +85,6 @@ function clearPaths(clearButton) {
     if(clearButton.innerText === "Clear Paths") {
         clearButton.innerText = "Finish";
         clearToggle = true;
-        rowList = document.querySelectorAll(".row");
-        var row = rowList[1];
-        cellList = row.children;
-        cellList[1].classList.replace("block", "empty");
     } else {
         clearButton.innerText = "Clear Paths";
         clearToggle = false;
@@ -134,8 +159,6 @@ function drawNinjaMan() {
     } 
 }
 
-drawNinjaMan()
-
 document.onkeydown = function(e) {
     if(e.key=="ArrowLeft"  && legalMoves[3] === 1) {
         ninjaMan.x--;
@@ -151,3 +174,8 @@ document.onkeydown = function(e) {
     }
     drawNinjaMan()
 } 
+
+// Initializing functions
+generateWorldArray(12,12)
+drawNinjaMan()
+
